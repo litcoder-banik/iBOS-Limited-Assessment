@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalaryReview.Models;
 using System.Globalization;
@@ -16,6 +17,7 @@ namespace SalaryReview.Controllers
             _context = context;
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult GetEmployees()
         {
@@ -34,6 +36,7 @@ namespace SalaryReview.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetEmployee(int id)
         {
@@ -52,6 +55,7 @@ namespace SalaryReview.Controllers
             }
         }
 
+        /*[Authorize]*/
         [HttpPost]
         public IActionResult AddEmployee([FromBody] Employee employee)
         {
@@ -66,10 +70,10 @@ namespace SalaryReview.Controllers
                 return BadRequest(ex.Message);
             }
         }
-       
+
 
         /*API#01*/
-
+        [Authorize]
         [HttpPatch]
         public IActionResult UpdateEmployee(Employee employee)
         {
@@ -107,7 +111,7 @@ namespace SalaryReview.Controllers
         }
 
         /*API#02*/
-
+        /*[Authorize]*/
         [HttpGet]
         public IActionResult GetThirdSalary()
         {
@@ -130,8 +134,8 @@ namespace SalaryReview.Controllers
             }
         }
 
-        
 
+        
         [HttpGet]
         public IActionResult GetEmployeeAttendence()
         {
@@ -150,7 +154,7 @@ namespace SalaryReview.Controllers
             }
         }
 
-
+        
         [HttpGet("{id}")]
         public IActionResult GetEmployeeAttendence(int id)
         {
@@ -169,6 +173,7 @@ namespace SalaryReview.Controllers
             }
         }
 
+        
         [HttpPost]
         public IActionResult AddEmployeeAttendence([FromBody] EmployeeAttendance employeeAttendance)
         {
@@ -185,7 +190,7 @@ namespace SalaryReview.Controllers
         }
 
         /*API#03*/
-
+        /*[Authorize]*/
         [HttpGet]
         public IActionResult GetSalary()
         {
@@ -202,7 +207,7 @@ namespace SalaryReview.Controllers
         }
 
         /*API#04*/
-
+        /*[Authorize]*/
         [HttpGet("monthlyattendance")]
         public IActionResult GetMonthlyAttendanceReport()
         {
@@ -254,7 +259,7 @@ namespace SalaryReview.Controllers
 
 
         /*API#05*/
-
+        /*[Authorize]*/
         [HttpGet("employeehierarchy/{employeeId}")]
         public IActionResult GetEmployeeHierarchy(int employeeId)
         {

@@ -1,0 +1,167 @@
+--------------- [iBos Limited] ---------------
+----- [.NET Developer Intern Assessment] -----
+
+
+--------------
+[Introduction]
+--------------
+
+Welcome to the SalaryReview API application. This .NET Core Web API application provides various endpoints to manage employee data and attendance records with the help of authentication.
+
+
+---------------
+[Prerequisites]
+---------------
+
+Before using this API, you will need:
+
+API Key: Obtain an API key to authenticate your requests.
+Authentication: Ensure you have proper authentication credentials, such as JWT tokens, to access protected endpoints.
+
+As there is no "SignUp" or "Registration" part in this application, integrated a JWT Token by the code which is:
+
+Token Key: [eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY5NDE5MzgxNywiaWF0IjoxNjk0MTkzODE3fQ.C_aDoTIBUKy5WBlX6onYIgtS6_fEmTu_LoOg9kce7p4]
+
+
+-----------
+[API Route]
+-----------
+
+-----------------------------------------------------------
+API # 01: http://localhost:5003/api/Employee/UpdateEmployee
+-----------------------------------------------------------
+
+Using this API, User can edit employeeName and employeeCode. But if user edit the employeeCode with a previous existed employeeCode it will throw an exception error, otherwish user can edit the employeeName and employeeCode as the users own wish.
+
+Input: [Body]->[Json Format Data]
+
+{
+    "employeeId" : 502030,
+    "employeeName" : "Mehedi Hasan ",
+    "employeeCode" : "EMP320"
+}
+
+Output: [Employee Information Updated] 
+or  
+[Invalid Employee Data], [Employee Not Found with id: 502029], [Employee Code Already Exist.]
+
+
+
+-----------------------------------------------------------
+API # 02: http://localhost:5003/api/Employee/GetThirdSalary
+-----------------------------------------------------------
+
+Through this API User can see the "Third Highest" salary from the all employees.
+
+Input: [HttpGet] -> Request
+Output: 
+[
+    {
+        "employeeId": 502035,
+        "employeeName": "Rasel Shikder",
+        "employeeCode": "EMP325",
+        "employeeSalary": 53500,
+        "supervisorId": 502033
+    }
+]
+
+
+
+------------------------------------------------------
+API # 03: http://localhost:5003/api/Employee/GetSalary
+------------------------------------------------------
+
+By this API User can see the employees salary who has not any Absent record yet.
+
+Input: [HttpGet] -> Request
+Output:
+[
+    {
+        "employeeId": 502031,
+        "employeeName": "Ashikur Rahman",
+        "employeeCode": "EMP321",
+        "employeeSalary": 45000,
+        "supervisorId": 502036
+    }
+]
+
+
+
+-----------------------------------------------------------------------------------------
+API # 04: http://localhost:5003/api/Employee/GetMonthlyAttendanceReport/monthlyattendance
+-----------------------------------------------------------------------------------------
+
+The API returns a record of attendance report based on the months.
+
+Input: [HttpGet] -> Request
+Output:
+[
+  {
+    "employeeName": "Mehedi Hasan",
+    "monthName": "N/A",
+    "payableSalary": 50000,
+    "totalPresent": 1,
+    "totalAbsent": 1,
+    "totalOffday": 0
+  },
+  {
+    "employeeName": "Ashikur Rahman",
+    "monthName": "N/A",
+    "payableSalary": 45000,
+    "totalPresent": 1,
+    "totalAbsent": 0,
+    "totalOffday": 0
+  }
+]
+
+
+------------------------------------------------------------------------------------------
+API # 05: http://localhost:5003/api/Employee/GetEmployeeHierarchy/employeehierarchy/502036
+------------------------------------------------------------------------------------------
+
+Through this API User can get the Supervisor Name by the hierarchy process.
+
+Input: [HttpGet] -> Url(502036)
+Output:
+[
+  {
+    "employeeName": "Rasel Shikder"
+  },
+  {
+    "employeeName": "Hasan Abdullah"
+  },
+  {
+    "employeeName": "Ashikur Rahman"
+  },
+  {
+    "employeeName": "Selim Reja"
+  }
+]
+
+or "Sometime it gives an exception error".
+
+
+
+----------------------------- [Thank You iBos Limited] ----------------------------
+--------------------------------- [Parthib Banik] ---------------------------------
+------------------------- [Email: banikparthib401@gail.com] -----------------------
+----- [GitHub: https://github.com/litcoder-banik/iBOS-Limited-Assessment.git] -----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
