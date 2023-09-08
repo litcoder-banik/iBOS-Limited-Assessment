@@ -66,6 +66,9 @@ namespace SalaryReview.Controllers
                 return BadRequest(ex.Message);
             }
         }
+       
+
+        /*API#01*/
 
         [HttpPatch]
         public IActionResult UpdateEmployee(Employee employee)
@@ -103,6 +106,8 @@ namespace SalaryReview.Controllers
             }
         }
 
+        /*API#02*/
+
         [HttpGet]
         public IActionResult GetThirdSalary()
         {
@@ -124,6 +129,8 @@ namespace SalaryReview.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        
 
         [HttpGet]
         public IActionResult GetEmployeeAttendence()
@@ -177,6 +184,7 @@ namespace SalaryReview.Controllers
             }
         }
 
+        /*API#03*/
 
         [HttpGet]
         public IActionResult GetSalary()
@@ -193,37 +201,32 @@ namespace SalaryReview.Controllers
             }
         }
 
+        /*API#04*/
 
-        [HttpGet]
-        public IActionResult GetReport()
+        [HttpGet("monthlyattendance")]
+        public IActionResult GetMonthlyAttendanceReport()
         {
             try
             {
                 var monthlyReport = _context.Employees
-                .Select(employee => new
-                {
-                    Employee = employee,
-                    AttendanceDate = GetEarliestAttendanceDate(employee.employeeId)
-                })
-                .Select(x => new MonthlyAttendanceReport
-                {
-                    EmployeeName = x.Employee.employeeName,
-                    MonthName = GetMonthName(x.AttendanceDate), // Use the actual date field from your database
-                    PayableSalary = x.Employee.employeeSalary, // You may need to calculate this based on your business logic
-                    TotalPresent = _context.EmployeesAttendances.Count(a => a.EmployeeId == x.Employee.employeeId && a.isPresent == 1),
-                    TotalAbsent = _context.EmployeesAttendances.Count(a => a.EmployeeId == x.Employee.employeeId && a.isAbsent == 1),
-                    TotalOffday = _context.EmployeesAttendances.Count(a => a.EmployeeId == x.Employee.employeeId && a.isOffday == 1)
-                })
-                .ToList();
+                    .ToList() 
+                    .Select(employee => new MonthlyAttendanceReport
+                    {
+                        EmployeeName = employee.employeeName,
+                        MonthName = GetMonthName(employee.employeeId),
+                        PayableSalary = employee.employeeSalary,
+                        TotalPresent = _context.EmployeesAttendances.Count(a => a.EmployeeId == employee.employeeId && a.isPresent == 1),
+                        TotalAbsent = _context.EmployeesAttendances.Count(a => a.EmployeeId == employee.employeeId && a.isAbsent == 1),
+                        TotalOffday = _context.EmployeesAttendances.Count(a => a.EmployeeId == employee.employeeId && a.isOffday == 1)
+                    })
+                    .ToList();
 
                 if (monthlyReport.Count == 0)
                 {
                     return NotFound("No Monthly Report Data Found");
                 }
-                else
-                {
-                    return Ok(monthlyReport);
-                }
+
+                return Ok(monthlyReport);
             }
             catch (Exception ex)
             {
@@ -231,28 +234,78 @@ namespace SalaryReview.Controllers
             }
         }
 
-        private DateTime? GetEarliestAttendanceDate(int employeeId)
+        private string GetMonthName(int employeeId)
         {
-            return _context.EmployeesAttendances
+            var monthName = _context.EmployeesAttendances
                 .Where(a => a.EmployeeId == employeeId)
-                .OrderBy(a => a.attendenceDate) // You may need to adjust the ordering based on your requirements
-                .Select(a => a.attendenceDate)
+                .OrderBy(a => a.attendenceDate)
+                .Select(a => a.attendenceDate.Month)
                 .FirstOrDefault();
-        }
 
-        private string GetMonthName(DateTime? date)
-        {
-            if (date.HasValue)
+            if (monthName != 0)
             {
-                return date.Value.ToString("MMM");
+                return CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthName);
             }
 
-            // Return a default value or handle the case where the date is missing
-            return "N/A"; // "N/A" indicates not available or an error state
+            return "N/A";
         }
 
 
 
+
+        /*API#05*/
+
+        [HttpGet("employeehierarchy/{employeeId}")]
+        public IActionResult GetEmployeeHierarchy(int employeeId)
+        {
+            try
+            {
+                var employee = _context.Employees.FirstOrDefault(e => e.employeeId == employeeId);
+
+                if (employee == null)
+                {
+                    return NotFound("Employee Not Found");
+                }
+
+                var hierarchy = GetHierarchy(employeeId);
+
+                return Ok(hierarchy);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        private EmployeeHierarchy GetHierarchy(int employeeId)
+        {
+            var employee = _context.Employees.FirstOrDefault(e => e.employeeId == employeeId);
+
+            if (employee == null)
+            {
+                return null;
+            }
+
+            var hierarchy = new EmployeeHierarchy
+            {
+                EmployeeId = employee.employeeId,
+                EmployeeName = employee.employeeName,
+                Subordinates = new List<EmployeeHierarchy>()
+            };
+
+            var subordinates = _context.Employees.Where(e => e.supervisorId == employeeId).ToList();
+
+            foreach (var subordinate in subordinates)
+            {
+                var subordinateHierarchy = GetHierarchy(subordinate.employeeId);
+                if (subordinateHierarchy != null)
+                {
+                    hierarchy.Subordinates.Add(subordinateHierarchy);
+                }
+            }
+
+            return hierarchy;
+        }
     }
 
 
@@ -265,4 +318,12 @@ namespace SalaryReview.Controllers
         public int TotalAbsent { get; set; }
         public int TotalOffday { get; set; }
     }
+
+    public class EmployeeHierarchy
+    {
+        public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; }
+        public List<EmployeeHierarchy> Subordinates { get; set; }
+    }
+
 }
